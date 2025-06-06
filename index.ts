@@ -29,11 +29,6 @@ io.on("connection", (socket) => {
         console.log("client got disconnected")
     })
 
-    socket.on("video-chunks", (data) => {
-        console.log("video-chunks")
-    })
-
-    socket.emit("server-join", "Hello from server")
 })
 
 server.listen(5001, () => {
