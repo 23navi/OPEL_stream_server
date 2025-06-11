@@ -37,6 +37,8 @@ io.on("connection", (socket) => {
     socket.on("video-chunks", async (data) => {
         const writeStream = fs.createWriteStream(`${uploadDir}/${data.filename}`)
         recordedChunks.push(data.chunk)
+
+        // Note: Blob is not native to node, it is a browser api but node18+ started supporting it
         const videoBlob = new Blob(recordedChunks, { type: 'video/webm; codecs=vp9' })
         const buffer = Buffer.from(await videoBlob.arrayBuffer())
         const readStream = Readable.from(buffer)
