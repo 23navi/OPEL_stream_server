@@ -4,8 +4,12 @@
 ## Setup and dependencies
 
 ```bash
-bun init
-bun add express axios cors dotenv fix-webm-duration socket.io openai hound zod cloudinary @aws-sdk/client-s3 @aws-sdk/lib-storage aws-sdk
+pnpm init
+pnpm install express axios cors dotenv fix-webm-duration socket.io openai hound zod cloudinary @aws-sdk/client-s3 @aws-sdk/lib-storage aws-sdk
+
+pnpm install -D typescript @types/node @types/express @types/cors ts-node
+
+npx tsc --init
 ```
 
 
