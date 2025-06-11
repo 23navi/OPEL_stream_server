@@ -3,6 +3,10 @@ import { Server as SocketServer } from "socket.io"
 import cors from "cors"
 import http from "http"
 import dotenv from "dotenv"
+import path from "path"
+import fs from "fs"
+import { Readable } from "stream"
+
 
 dotenv.config()
 
@@ -11,6 +15,13 @@ const server = http.createServer(app)
 
 app.use(cors())
 
+
+// Ensure temp_upload directory exists
+const uploadDir = path.join(__dirname, 'temp_upload');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const io = new SocketServer(server, {
     cors: {
         origin: "*",
@@ -18,12 +29,20 @@ const io = new SocketServer(server, {
     }
 })
 
+let recordedChunks = []
+
 io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`)
 
-    socket.on("video-chunks", (data) => {
-        console.log({ video_chunk: data })
-
+    socket.on("video-chunks", async (data) => {
+        const writeStream = fs.createWriteStream(`${uploadDir}/${data.filename}`)
+        recordedChunks.push(data.chunk)
+        const videoBlob = new Blob(recordedChunks, { type: 'video/webm; codecs=vp9' })
+        const buffer = Buffer.from(await videoBlob.arrayBuffer())
+        const readStream = Readable.from(buffer)
+        readStream.pipe(writeStream).on("finish", () => {
+            console.log("video saved")
+        })
     })
 
     socket.on("process-video", (data) => {
