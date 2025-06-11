@@ -21,6 +21,11 @@ const io = new SocketServer(server, {
 io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`)
 
+    socket.on("video-chunks", (data) => {
+        console.log({ video_chunk: data })
+
+    })
+
     socket.on("process-video", (data) => {
         console.log(data)
     })
